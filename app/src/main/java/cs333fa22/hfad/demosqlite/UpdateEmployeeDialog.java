@@ -32,11 +32,13 @@ public class UpdateEmployeeDialog  extends DialogFragment
     private Button btnCancel;
     private DBHelper dbHelper;
     private Employee employeeToShow;
+    private EmployeeListAdapter employeeListAdapter;
 
 
-    public UpdateEmployeeDialog(Employee employee)
+    public UpdateEmployeeDialog(Employee employee, EmployeeListAdapter empListAdapter)
     {
         this.employeeToShow = employee;
+        employeeListAdapter = empListAdapter;
     }
 
     @Override
@@ -74,6 +76,7 @@ public class UpdateEmployeeDialog  extends DialogFragment
             @Override
             public void onClick(View view) {
 
+                updateEmployeeInfo();
                 dismiss();
 
             }
@@ -109,6 +112,8 @@ public class UpdateEmployeeDialog  extends DialogFragment
             }
         });
 
+        dbHelper = new DBHelper(getContext());
+
         builder.setView(dialogView).setMessage("Update Employee");
         return builder.create();
     }
@@ -130,6 +135,16 @@ public class UpdateEmployeeDialog  extends DialogFragment
         else  //Update info for employee
         {
             toastString = "Employee updated.";
+
+            employeeToShow.setName(name);
+            employeeToShow.setDesignation(desig);
+            employeeToShow.setDob(calInMS);
+
+            dbHelper.updateEmployee(employeeToShow);
+
+            //employeeListAdapter.notifyDataSetChanged();
+            int size = dbHelper.fetchAllEmployees().size();
+            employeeListAdapter.notifyItemRangeChanged(0, size);
 
         }
 
